@@ -1,3 +1,5 @@
+import os
+import glob
 import whisper
 import streamlit as st
 from helper import save_record, create_spectogram, read_audio, record
@@ -12,17 +14,18 @@ def speech2Text(voicenote):
     return st.text(outputnote)
 
 
-app_mode = st.sidebar.selectbox()['Transcribe', 'Synthesize']
+app_mode = st.sidebar.selectbox("Selections",
+                                ['Transcribe', 'Synthesize'])
 
 if app_mode == "Transcribe":
     ## Record and Save Audio
     st.header("Record your note")
+    duration = st.number_input("Choose duration of recording", 3, 10, 5, 1) # Seconds
     filename = st.text_input("Enter a filename")
-    duration = st.select_slider("Choose duration of recording", 3, 5, 10, 1) #Seconds
 
     if st.button(f"Click to Record"):
         if filename == "":
-            st.warning("Choose a filename")
+            st.warning("Please enter a filename")
         else:
             ## Start to record
             record_state = st.text("Recording..")
@@ -40,14 +43,24 @@ if app_mode == "Transcribe":
             st.audio(read_audio(path_of_recording))
 
             ## Display Spectogram
+            st.sidebar.text("Recorded Audio Spectogram")
+            st.sidebar.markdown("---")
             fig = create_spectogram(path_of_recording)
-            st.pyplot(fig)
-
-            ## Display Transcription
-            speech2Text(path_of_recording)
+            st.sidebar.pyplot(fig)
 
     ## Transcribe
-
+    ## Display Transcription
+    st.markdown("---")
+    if st.checkbox("Transcribe Recording"):
+        audio_folder = "samples"
+        filenames = glob.glob(os.path.join(audio_folder, "*.mp3"))
+        selected_filename = st.selectbox("Select a recording", filenames)
+        with st.spinner("Generating your text..."):
+            speech2Text(selected_filename)
 
 if app_mode == "Synthesize":
     st.header("Synthesize Text with your voice.")
+
+    st.markdown("An application that synthesizes your recording into written "
+                "text, with promising possibilities for the vocally impaired")
+    st.markdown("Work in Progress")
