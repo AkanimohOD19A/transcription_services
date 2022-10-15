@@ -1,7 +1,6 @@
 whisper @ git+https://github.com/openai/whisper.git@d18e9ea5dd2ca57c697e8e55f9e654f06ede25d0
-pathlib<=1.0
 wavio==0.0.4
-librosa==0.8.1
+librosa<=0.8.1
 streamlit==1.11.0
 matplotlib<=3.4.3
-sounddevice==0.4.4
+sounddevice<=0.4.4
